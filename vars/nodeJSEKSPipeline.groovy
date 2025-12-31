@@ -169,6 +169,9 @@
         //         }
         //     }
         // }
+
+      
+
         // stage('Build'){
         //     steps {
         //         script {
@@ -188,37 +191,20 @@
         //         }
         //     }
         // }
-        stage('Test'){
-            steps{
-                script{
-                    """
-                    echo "Testing"
 
-                    """
+         stage ('Trigger Deploy'){
+            steps {
+                script{
+                    build job: "../${COMPONENT}-deploy",
+                    wait: false, //wait for completion
+                    propagate: false, //propagation status
+                    parameters: [
+                        string(name: 'appVersion', value: "${appVersion}"),
+                        string(name: 'deploy_to', value: "dev")
+                    ]
                 }
             }
-        }
-        // stage('Deploy'){
-        //     // input {
-        //     //     message "Should we continue?"
-        //     //     ok "Yes, we should."
-        //     //     submitter "alice,bob"
-        //     //     parameters {
-        //     //         string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
-        //     //     }
-        //     // }
-        //     when { 
-        //         expression { "$params.DEPLOY" == "true" }
-        //     }
-        //     steps{
-        //         script {
-        //             """
-        //             echo "Deploying"
-
-        //             """
-        //         }
-        //     }
-        // }
+         }
     }
           // This is post-build section
         post{
@@ -236,5 +222,5 @@
                 echo 'Pipeline is aborted'
             }
     }
-}
+  }
 }
