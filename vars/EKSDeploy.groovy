@@ -1,0 +1,84 @@
+def call(Map configMap){
+    pipeline {
+    // These are pre-build sections
+    agent {
+        node {
+            label 'AGENT-1'
+        }
+    }
+
+    environment {
+        COURSE    = "Jenkins"
+        appVersion = configMap.get("app_Version")
+        ACC_ID    = "445567085619"
+        PROJECT   = configMap.get("project")
+        COMPONENT = configMap.get("component")
+        deply_to = configMap.get("deploy_to")
+        REGION    = "us-east-1"
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        string(name: 'appVersion', description: 'Which app version you want to deploy')
+        choice(name: 'deploy_to', choices: ['dev', 'qa', 'prod'], description: 'Pick environment')
+    }
+
+    stages {
+        stage('Deploy') {
+            steps {
+                script {
+                    withAWS(region: REGION, credentials: 'aws-creds') {
+                        sh """
+
+                        aws eks update-kubeconfig --region ${REGION} --name ${PROJECT}-${params.deploy_to}
+
+                        kubectl get nodes
+
+                        sed -i "s/IMAGE_VERSION/${appVersion}/g" values.yaml
+
+                        helm upgrade --install ${COMPONENT} -f values-${deploy_to}.yaml -n ${PROJECT} --atomic --wait --timeout=5m .
+
+                        kubectl apply -f ${COMPONENT}-${deploy_to}.yaml
+
+
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Functional Testing'){
+        when{
+            expression { deploy_to == "dev" }
+            }
+        steps{
+            script{
+                sh """
+                    echo "functional tests in DEV environment"
+                   """
+                }
+            }
+         }
+    }   
+    post {
+        always {
+            echo 'I will always say Hello Again!'
+            cleanWs()
+        }
+        success {
+            echo 'I will run if pipeline success'
+        }
+        failure {
+            echo 'I will run if pipeline failure'
+        }
+        aborted {
+            echo 'Pipeline is aborted'
+        }
+    }
+}
+
+}
