@@ -22,10 +22,10 @@ def call(Map configMap){
         disableConcurrentBuilds()
     }
 
-    parameters {
-        string(name: 'appVersion', description: 'Which app version you want to deploy')
-        choice(name: 'deploy_to', choices: ['dev', 'qa', 'prod'], description: 'Pick environment')
-    }
+    // parameters {
+    //     string(name: 'appVersion', description: 'Which app version you want to deploy')
+    //     choice(name: 'deploy_to', choices: ['dev', 'qa', 'prod'], description: 'Pick environment')
+    // }
 
     stages {
         stage('Deploy') {
@@ -34,7 +34,7 @@ def call(Map configMap){
                     withAWS(region: REGION, credentials: 'aws-creds') {
                         sh """
 
-                        aws eks update-kubeconfig --region ${REGION} --name ${PROJECT}-${params.deploy_to}
+                        aws eks update-kubeconfig --region ${REGION} --name ${PROJECT}-${deploy_to}
 
                         kubectl get nodes
 
