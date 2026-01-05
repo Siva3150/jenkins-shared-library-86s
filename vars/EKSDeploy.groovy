@@ -33,7 +33,8 @@ def call(Map configMap){
                 script {
                     withAWS(region: REGION, credentials: 'aws-creds') {
                         sh """
-
+                        
+                        set -e
                         aws eks update-kubeconfig --region ${REGION} --name ${PROJECT}-${deploy_to}
 
                         kubectl get nodes
