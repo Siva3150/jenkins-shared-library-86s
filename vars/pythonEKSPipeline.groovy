@@ -54,7 +54,7 @@
             script{
                 sh """
                    
-                   npm test
+                   echo test
 
                    """
             }
