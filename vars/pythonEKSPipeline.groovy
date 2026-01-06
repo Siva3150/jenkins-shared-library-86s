@@ -27,7 +27,7 @@
     // password(name: 'PASSWORD', defaultValue: 'SECRET', description: 'Enter a password')
     // }
 
-    
+
     // This is build section
 
     stages{
@@ -35,7 +35,7 @@
         steps{
             script {
                 // appVersion = readFile(file: 'version')
-                appVersion = readFile(file:'version').trim()
+                appVersion = readFile(file:'version')
 
                 echo "app version: ${appVersion}"
             }
@@ -149,7 +149,7 @@
                     withAWS(region:'us-east-1',credentials:'aws-creds') {
                         sh """
                             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
-                            docker build --platform linux/amd64 -t ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion} .
+                            docker build -t ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion} .
                             docker images
                             docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
                         """
