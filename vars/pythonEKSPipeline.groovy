@@ -27,6 +27,21 @@
     // password(name: 'PASSWORD', defaultValue: 'SECRET', description: 'Enter a password')
     // }
     // This is build section
+
+    stage('Read Version') {
+    steps {
+        script {
+            // Print the raw content of the version file for debugging
+            def rawVersion = readFile('version')
+            echo "Raw version file content: '${rawVersion}'"
+            
+            // Now trim and use it
+            appVersion = rawVersion.trim()
+            echo "app version: ${appVersion}"
+        }
+    }
+}
+
     stages{
         stage('Read Version') {
         steps{
