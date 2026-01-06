@@ -31,7 +31,9 @@
         stage('Read Version') {
         steps{
             script {
-                appVersion = readFile(file: 'version')
+                // appVersion = readFile(file: 'version')
+                appVersion = readFile(file:'version').trim()
+
                 echo "app version: ${appVersion}"
             }
         }
